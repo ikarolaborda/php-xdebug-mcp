@@ -1,0 +1,11 @@
+services:
+  app:
+    image: php:8.3-cli
+    working_dir: /var/www/html
+    command: ["php", "-dzend_extension=xdebug", "-dxdebug.mode=debug", "-dxdebug.start_with_request=yes", "-dxdebug.client_host=host.docker.internal", "-dxdebug.client_port=9003", "-S", "0.0.0.0:8080", "-t", "."]
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "8080:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

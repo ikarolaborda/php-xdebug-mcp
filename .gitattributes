@@ -1,0 +1,18 @@
+# Normalize line endings
+* text=auto eol=lf
+
+*.md diff=markdown
+*.php diff=php
+
+# Files / directories excluded from `composer archive` dist tarball
+/.agent          export-ignore
+/.github         export-ignore
+/.serena         export-ignore
+/tests           export-ignore
+/examples        export-ignore
+/docs            export-ignore
+/.gitattributes  export-ignore
+/.gitignore      export-ignore
+/.phpunit.cache  export-ignore
+/.phpunit.result.cache export-ignore
+/phpunit.xml     export-ignore

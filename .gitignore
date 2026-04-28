@@ -1,0 +1,39 @@
+# Dependencies
+/vendor/
+
+# Composer artifacts (composer.json + composer.lock are committed)
+/composer.phar
+
+# PHPUnit caches
+/.phpunit.result.cache
+/.phpunit.cache/
+
+# Tooling caches
+/.php-cs-fixer.cache
+
+# Local agent / IDE state — never commit
+/.agent/
+/.serena/
+/.idea/
+/.vscode/
+/.zed/
+/.nova/
+/.cursor/
+/.codex/
+/.phpactor.json
+/auth.json
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Docker volumes / state
+/examples/docker/**/data/
+
+# Logs
+*.log

@@ -1,0 +1,70 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "ikarolaborda/php-xdebug-mcp",
+    "type": "library",
+    "description": "Production-grade MCP server that exposes Xdebug step debugging via DBGp as typed, safe, model-friendly tools and resources for AI coding agents.",
+    "keywords": [
+        "mcp",
+        "model-context-protocol",
+        "xdebug",
+        "dbgp",
+        "debug-adapter",
+        "php-mcp",
+        "ai-tools",
+        "claude",
+        "codex",
+        "copilot"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ikaro Laborda",
+            "email": "iclaborda@msn.com"
+        }
+    ],
+    "bin": [
+        "bin/php-xdebug-mcp"
+    ],
+    "require": {
+        "php": "^8.3",
+        "ext-dom": "*",
+        "ext-libxml": "*",
+        "ext-mbstring": "*",
+        "ext-simplexml": "*",
+        "ext-sockets": "*",
+        "php-mcp/server": "^3.3",
+        "psr/log": "^3.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.6",
+        "phpunit/phpunit": "^12.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpXdebugMcp\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "vendor/bin/phpunit"
+        ],
+        "test:unit": [
+            "vendor/bin/phpunit --testsuite=Unit"
+        ],
+        "test:contract": [
+            "vendor/bin/phpunit --testsuite=Contract"
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

@@ -1,0 +1,67 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * php-xdebug-mcp stdio entry point.
+ *
+ * The script never writes to stdout — that channel belongs to the MCP
+ * transport. All log output goes to the configured sink (stderr by default).
+ */
+
+$autoload = null;
+foreach ([__DIR__ . '/../vendor/autoload.php', __DIR__ . '/../../vendor/autoload.php', __DIR__ . '/../../../autoload.php'] as $path) {
+    if (is_file($path)) {
+        $autoload = $path;
+        break;
+    }
+}
+if ($autoload === null) {
+    fwrite(STDERR, "[php-xdebug-mcp] cannot locate vendor/autoload.php\n");
+    exit(1);
+}
+require $autoload;
+
+use PhpMcp\Server\Transports\StdioServerTransport;
+use PhpXdebugMcp\App\Config;
+use PhpXdebugMcp\App\ServerFactory;
+
+$argvLocal = $argv ?? [];
+foreach ($argvLocal as $arg) {
+    if ($arg === '--help' || $arg === '-h') {
+        fwrite(STDERR, "php-xdebug-mcp: MCP server bridging Xdebug DBGp.\n");
+        fwrite(STDERR, "Usage: php-xdebug-mcp [--config=PATH]\n");
+        fwrite(STDERR, "Configuration is loaded from PHP_XDEBUG_MCP_CONFIG or config/php-xdebug-mcp.php.\n");
+        exit(0);
+    }
+    if ($arg === '--version' || $arg === '-V') {
+        fwrite(STDERR, "php-xdebug-mcp 0.1.0\n");
+        exit(0);
+    }
+}
+
+try {
+    $configPath = null;
+    foreach ($argvLocal as $arg) {
+        if (str_starts_with($arg, '--config=')) {
+            $configPath = substr($arg, strlen('--config='));
+        }
+    }
+
+    $cfg = Config::load($configPath);
+    $wired = ServerFactory::build($cfg);
+
+    $wired['runtime']->start();
+    $wired['logger']->info('php-xdebug-mcp.start', [
+        'listener' => $wired['listener']->getAddress(),
+        'safety_mode' => $cfg->safetyMode->value,
+    ]);
+
+    $transport = new StdioServerTransport();
+    $wired['server']->listen($transport);
+} catch (\Throwable $e) {
+    fwrite(STDERR, '[php-xdebug-mcp] fatal: ' . $e->getMessage() . "\n");
+    fwrite(STDERR, $e->getTraceAsString() . "\n");
+    exit(1);
+}
