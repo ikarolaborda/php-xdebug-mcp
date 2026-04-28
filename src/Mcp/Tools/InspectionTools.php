@@ -189,8 +189,11 @@ final class InspectionTools
             }
             $r = $this->roundtrip($session, 'source', $args);
             $body = (string) ($r['attrs']['_text'] ?? '');
-            // SimpleXML "value" lives in children when present; the response
-            // payload for source is base64 encoded if encoding=base64.
+            /*
+             * SimpleXML exposes "value" on children when present; the
+             * response payload for `source` is base64-encoded when
+             * encoding=base64.
+             */
             $rawXml = $r['children'][0]['value'] ?? null;
             if ($rawXml === null && isset($r['attrs']['encoding']) && $r['attrs']['encoding'] === 'base64') {
                 $body = base64_decode((string) ($r['attrs']['_value'] ?? ''), true) ?: '';

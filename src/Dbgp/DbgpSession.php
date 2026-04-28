@@ -190,7 +190,11 @@ final class DbgpSession
         if (is_resource($this->socket)) {
             @fclose($this->socket);
         }
-        // Resolve all pending callbacks with a synthetic disconnect response.
+        /*
+         * Pending callers are blocked waiting for replies that will never
+         * arrive; deliver a synthetic disconnect response so they unblock
+         * with a deterministic shape instead of a timeout.
+         */
         foreach ($this->pendingResolvers as $txid => $resolver) {
             ($resolver)([
                 'transaction_id' => $txid,

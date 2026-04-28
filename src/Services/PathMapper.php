@@ -77,7 +77,11 @@ final readonly class PathMapper
         }
 
         if (self::isLocalAbsolute($localAbs)) {
-            // No rule needed if the runtime sees the same path as us (common dev case).
+            /*
+             * No explicit rule, but the path looks absolute on this OS,
+             * so assume the runtime sees the same path (typical when
+             * the MCP server and the PHP runtime share a filesystem).
+             */
             return new PathMappingResult(
                 kind: FrameKind::File,
                 localPath: $localAbs,
@@ -155,7 +159,11 @@ final readonly class PathMapper
             }
         }
 
-        // No rule matched. Fallback to identity if absolute on this OS.
+        /*
+         * No rule matched. If the remote path is locally absolute,
+         * fall back to identity mapping — common when a remote shell
+         * shares the host filesystem (eg ssh to the same machine).
+         */
         if (self::isLocalAbsolute($remotePath)) {
             return new PathMappingResult(
                 kind: FrameKind::File,
@@ -224,7 +232,11 @@ final readonly class PathMapper
             return null;
         }
         $remoteParts = array_values(array_filter(explode('/', str_replace('\\', '/', $remotePath)), static fn (string $p): bool => $p !== ''));
-        // Drop the trailing filename so we compare directory tails.
+        /*
+         * Drop the trailing filename so the suffix overlap compares
+         * directory tails (`/var/www/html/app`) rather than mixing in
+         * the leaf (`Index.php`).
+         */
         if ($remoteParts !== [] && str_contains(end($remoteParts), '.')) {
             array_pop($remoteParts);
         }
@@ -232,11 +244,14 @@ final readonly class PathMapper
             return null;
         }
 
-        // We score each candidate (longest trailing overlap wins). Ties are
-        // broken by depth (shallower candidates beat deeply-nested ones — in
-        // a monorepo with duplicated tails, the user typically wants the
-        // directory closer to the workspace root). Final tie-break is
-        // lexical so the suggestion is deterministic.
+        /*
+         * Scoring: longest trailing-segment overlap wins. Ties are
+         * broken by depth (shallower candidates beat deeply-nested
+         * ones — in monorepos with duplicated `app` / `src` tails the
+         * user typically wants the directory closer to the workspace
+         * root). The final tie-break is lexical so the suggestion is
+         * deterministic across runs.
+         */
         $best = null;
         $bestDepth = PHP_INT_MAX;
         foreach ($workspaceRoots as $root) {
@@ -374,7 +389,10 @@ final readonly class PathMapper
         if ($path === '') {
             return null;
         }
-        // file:///C:/... -> C:/...
+        /*
+         * Windows file URIs follow the `file:///C:/...` form; strip the
+         * leading `/` so the result is a usable Windows-style path.
+         */
         if (preg_match('#^/([A-Za-z]):/#', $path) === 1) {
             $path = substr($path, 1);
         }

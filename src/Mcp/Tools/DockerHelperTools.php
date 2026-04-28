@@ -54,9 +54,12 @@ final class DockerHelperTools
             self::assertScriptLooksSafe($script);
 
             $env = $this->mergeEnv($env_overrides);
-            // Both forms are non-interactive: -T disables TTY allocation on
-            // compose, plain `docker exec` doesn't allocate a TTY by default
-            // and we don't pass -i, so stdin is left closed for the child.
+            /*
+             * Both forms are non-interactive: -T disables TTY allocation
+             * on compose, plain `docker exec` doesn't allocate a TTY by
+             * default and we don't pass -i, so stdin is left closed for
+             * the child.
+             */
             $argv = $use_compose
                 ? ['docker', 'compose', 'exec', '-T']
                 : ['docker', 'exec'];

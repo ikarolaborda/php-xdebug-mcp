@@ -231,9 +231,11 @@ final class BreakpointTools
             return ToolResult::error($e);
         }
 
-        // After installing, the agent typically calls xdebug_continue; surface
-        // that as a next_action rather than chaining synchronously to keep the
-        // tool envelope clean.
+        /*
+         * Surface the follow-up via next_actions instead of chaining a
+         * continue inline: the agent owns the timing, and the tool
+         * envelope stays narrowly scoped to the breakpoint install.
+         */
         return ToolResult::ok(
             'Temporary breakpoint installed; call xdebug_continue to run to that line.',
             ['breakpoint' => $def->toArray()],

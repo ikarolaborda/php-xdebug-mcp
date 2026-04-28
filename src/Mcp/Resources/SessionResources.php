@@ -52,10 +52,12 @@ final class SessionResources
 
     public function stack(string $sessionId): array
     {
-        // Note: this resource is intentionally lightweight; it only exposes
-        // the cached last-known stack info plus a hint to call xdebug_get_stack
-        // for a fresh fetch. Doing a roundtrip here would re-enter the runtime
-        // synchronously while the SDK is in the middle of a resource read.
+        /*
+         * Intentionally lightweight: only exposes cached state plus a hint
+         * to call xdebug_get_stack for a fresh fetch. Doing a roundtrip
+         * here would re-enter the runtime synchronously while the SDK is
+         * in the middle of a resource read.
+         */
         $s = $this->registry->tryGet($sessionId);
         if ($s === null) {
             return ['error' => 'session not found'];

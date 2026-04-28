@@ -200,9 +200,11 @@ final class DbgpRuntime
 
     private function onInit(DbgpSession $session): void
     {
-        // Probe features synchronously by sending feature_get for each known name.
-        // Each probe enqueues using the normal slot. To keep things simple we
-        // serialise the negotiation on first init with short waits.
+        /*
+         * Negotiate synchronously: each feature_get occupies the per-session
+         * normal slot, so probes are serialised on a short tickUntil deadline
+         * to keep the init phase predictable.
+         */
         foreach (FeatureNegotiator::probeList() as $name) {
             $session->sendCommand(
                 'feature_get',
@@ -211,13 +213,15 @@ final class DbgpRuntime
                 isContinuation: false,
                 isBreak: false,
                 resolver: function (array $response) use ($session, $name): void {
-                    // Xdebug returns feature values either as the response's
-                    // text content (most features), or as a `value` attribute
-                    // on the response root (some Xdebug versions). Some
-                    // features (eg. breakpoint_types, supported_encodings) are
-                    // reported as the response body.  The `supported`
-                    // attribute is only a yes/no on whether the feature
-                    // *exists*, not the value — never use it as the value.
+                    /*
+                     * Feature values live in the response body text for
+                     * most features; some Xdebug versions also publish a
+                     * child element with the value. The `supported`
+                     * attribute is a yes/no flag — NEVER use it as the
+                     * value. Falling back to `supported` silently
+                     * corrupts list-shaped features such as
+                     * breakpoint_types into "1".
+                     */
                     $value = (string) ($response['value'] ?? '');
                     if ($value === '') {
                         foreach ($response['children'] ?? [] as $c) {
@@ -265,7 +269,6 @@ final class DbgpRuntime
             }
         }
 
-        // Install all matching persistent breakpoints into the new session.
         foreach ($this->breakpoints->persistent() as $def) {
             $this->installBreakpoint($session, $def);
         }

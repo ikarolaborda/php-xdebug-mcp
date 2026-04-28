@@ -51,7 +51,11 @@ final class HelperTools
             ));
         }
         @fclose($pipes[0]);
-        // Close stdout/stderr pipes — the engine connects back to our DBGp listener.
+        /*
+         * Close stdout/stderr pipes — Xdebug connects back to our DBGp
+         * listener over its own socket; the child's stdio is just CLI
+         * output we don't capture from the helper layer.
+         */
         @fclose($pipes[1]);
         @fclose($pipes[2]);
         $status = proc_get_status($proc);

@@ -206,7 +206,11 @@ final class ControlTools
                     },
                 );
             } catch (AdapterException $e) {
-                // sending stop on a half-closed socket may immediately fail; treat as success.
+                /*
+                 * stop is allowed to close the socket without a normal
+                 * reply (DBGp 7.6). Disconnect-on-write is the expected
+                 * shape, not a failure.
+                 */
                 if ($e->errorCode === AdapterErrorCode::EngineDisconnected) {
                     $captured = ['status' => SessionState::Stopped->value, 'reason' => 'eof'];
                 } else {
