@@ -9,18 +9,18 @@ namespace PhpXdebugMcp\Domain\Paths;
  * carry kind != File and mapped_path may be null. Callers must inspect
  * status before treating mapped_path as a real on-disk file.
  */
-final class PathMappingResult
+final readonly class PathMappingResult
 {
     /**
      * @param list<string> $warnings
      */
     public function __construct(
-        public readonly FrameKind $kind,
-        public readonly ?string $localPath,
-        public readonly ?string $remoteUri,
-        public readonly MappingStatus $status,
-        public readonly ?string $ruleLabel = null,
-        public readonly array $warnings = [],
+        public FrameKind $kind,
+        public ?string $localPath,
+        public ?string $remoteUri,
+        public MappingStatus $status,
+        public ?string $ruleLabel = null,
+        public array $warnings = [],
     ) {
     }
 

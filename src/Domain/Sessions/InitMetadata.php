@@ -7,17 +7,17 @@ namespace PhpXdebugMcp\Domain\Sessions;
 /**
  * Captured attributes from the engine's <init> packet.
  */
-final class InitMetadata
+final readonly class InitMetadata
 {
     public function __construct(
-        public readonly string $appId,
-        public readonly ?string $ideKey,
-        public readonly ?string $sessionCookie,
-        public readonly ?string $thread,
-        public readonly ?string $parent,
-        public readonly string $language,
-        public readonly string $protocolVersion,
-        public readonly string $fileUri,
+        public string $appId,
+        public ?string $ideKey,
+        public ?string $sessionCookie,
+        public ?string $thread,
+        public ?string $parent,
+        public string $language,
+        public string $protocolVersion,
+        public string $fileUri,
     ) {
     }
 

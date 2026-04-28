@@ -13,24 +13,24 @@ use PhpXdebugMcp\Infrastructure\Ids;
  * BreakpointStore and not stored on the definition itself, so persistent
  * breakpoints can be replayed unchanged into new sessions.
  */
-final class BreakpointDefinition
+final readonly class BreakpointDefinition
 {
     public function __construct(
-        public readonly string $adapterId,
-        public readonly BreakpointType $type,
-        public readonly BreakpointScope $scope,
-        public readonly bool $enabled,
-        public readonly bool $temporary,
-        public readonly ?string $localPath,
-        public readonly ?string $remoteUri,
-        public readonly ?int $lineno,
-        public readonly ?string $functionName,
-        public readonly ?string $exceptionName,
-        public readonly ?string $expression,
-        public readonly ?int $hitValue,
-        public readonly ?HitCondition $hitCondition,
-        public readonly string $createdAt,
-        public readonly string $updatedAt,
+        public string $adapterId,
+        public BreakpointType $type,
+        public BreakpointScope $scope,
+        public bool $enabled,
+        public bool $temporary,
+        public ?string $localPath,
+        public ?string $remoteUri,
+        public ?int $lineno,
+        public ?string $functionName,
+        public ?string $exceptionName,
+        public ?string $expression,
+        public ?int $hitValue,
+        public ?HitCondition $hitCondition,
+        public string $createdAt,
+        public string $updatedAt,
     ) {
     }
 
@@ -74,23 +74,10 @@ final class BreakpointDefinition
 
     public function withRemoteUri(string $remoteUri, string $now): self
     {
-        return new self(
-            adapterId: $this->adapterId,
-            type: $this->type,
-            scope: $this->scope,
-            enabled: $this->enabled,
-            temporary: $this->temporary,
-            localPath: $this->localPath,
-            remoteUri: $remoteUri,
-            lineno: $this->lineno,
-            functionName: $this->functionName,
-            exceptionName: $this->exceptionName,
-            expression: $this->expression,
-            hitValue: $this->hitValue,
-            hitCondition: $this->hitCondition,
-            createdAt: $this->createdAt,
-            updatedAt: $now,
-        );
+        return clone($this, [
+            'remoteUri' => $remoteUri,
+            'updatedAt' => $now,
+        ]);
     }
 
     /**

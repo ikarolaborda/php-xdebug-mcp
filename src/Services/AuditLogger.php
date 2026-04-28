@@ -11,9 +11,9 @@ use Psr\Log\LoggerInterface;
  * tool invocations and DBGp command summaries. Sensitive bodies (eval code,
  * stdin payloads) are length-summarised rather than logged verbatim.
  */
-final class AuditLogger
+final readonly class AuditLogger
 {
-    public function __construct(private readonly LoggerInterface $logger)
+    public function __construct(private LoggerInterface $logger)
     {
     }
 

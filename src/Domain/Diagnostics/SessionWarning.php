@@ -12,20 +12,20 @@ namespace PhpXdebugMcp\Domain\Diagnostics;
  * structured shape (rather than freeform strings) lets future UI layers
  * group, sort, and dedupe consistently.
  */
-final class SessionWarning
+final readonly class SessionWarning
 {
-    public const CODE_PATH_RULE_MISSING = 'PATH_RULE_MISSING';
-    public const CODE_IDENTITY_MAPPING_IN_USE = 'IDENTITY_MAPPING_IN_USE';
-    public const CODE_BREAKPOINT_PATH_NOT_COVERED = 'BREAKPOINT_PATH_NOT_COVERED';
+    public const string CODE_PATH_RULE_MISSING = 'PATH_RULE_MISSING';
+    public const string CODE_IDENTITY_MAPPING_IN_USE = 'IDENTITY_MAPPING_IN_USE';
+    public const string CODE_BREAKPOINT_PATH_NOT_COVERED = 'BREAKPOINT_PATH_NOT_COVERED';
 
     /**
      * @param array<string, mixed> $context
      */
     public function __construct(
-        public readonly string $code,
-        public readonly string $message,
-        public readonly array $context = [],
-        public readonly ?string $hint = null,
+        public string $code,
+        public string $message,
+        public array $context = [],
+        public ?string $hint = null,
     ) {
     }
 

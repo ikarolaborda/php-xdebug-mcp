@@ -1,7 +1,7 @@
 # php-xdebug-mcp
 
 [![tests](https://github.com/ikarolaborda/php-xdebug-mcp/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/ikarolaborda/php-xdebug-mcp/actions/workflows/tests.yml)
-[![PHP](https://img.shields.io/badge/PHP-%5E8.3-777bb4?logo=php&logoColor=white)](https://www.php.net/supported-versions.php)
+[![PHP](https://img.shields.io/badge/PHP-%5E8.5-777bb4?logo=php&logoColor=white)](https://www.php.net/releases/8.5/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 > A production-grade **Model Context Protocol** server that exposes
@@ -48,15 +48,21 @@ It is built on
 - **Stdio-clean**: stdout is reserved for MCP traffic; logs go to
   stderr (or any configured PSR-3 sink). A regression test asserts
   this even on bootstrap failure.
-- **Tested**: 68 unit + contract tests run on PHP 8.3 and 8.4 in CI.
-  Real-Xdebug integration scenarios are scaffolded as runnable
-  examples; the unit/contract suites are deterministic and Docker-free.
+- **PHP 8.5 native**: the codebase uses `final readonly class` for value
+  objects, first-class callable syntax for handler registrations,
+  `clone($obj, [...])` for immutable updates, and `array_find` /
+  `array_any` where they cleanly express intent. CI runs the
+  Unit + Contract suites on PHP 8.5 against every push.
+- **Tested**: 67 unit + contract tests, deterministic and Docker-free.
+  Real-Xdebug integration scenarios are scaffolded as runnable examples.
 
 ---
 
 ## Quickstart
 
 ### 1. Install
+
+Requires **PHP 8.5+**. Install via Composer:
 
 ```bash
 composer require ikarolaborda/php-xdebug-mcp
@@ -268,7 +274,7 @@ vendor/bin/phpunit --testsuite=Contract     # FakeXdebugEngine + path diagnostic
 vendor/bin/phpunit --testsuite=Integration  # skipped without Xdebug installed
 ```
 
-CI runs Unit + Contract on PHP 8.3 and 8.4 against every push and PR
+CI runs Unit + Contract on PHP 8.5 against every push and PR
 to `main`.
 
 ---

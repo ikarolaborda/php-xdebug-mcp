@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace PhpXdebugMcp\Domain\Events;
 
-final class SessionEvent
+final readonly class SessionEvent
 {
     /** @param array<string, mixed> $data */
     public function __construct(
-        public readonly EventKind $kind,
-        public readonly string $sessionId,
-        public readonly string $occurredAt,
-        public readonly array $data = [],
+        public EventKind $kind,
+        public string $sessionId,
+        public string $occurredAt,
+        public array $data = [],
     ) {
     }
 

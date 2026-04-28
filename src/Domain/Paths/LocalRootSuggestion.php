@@ -9,12 +9,12 @@ namespace PhpXdebugMcp\Domain\Paths;
  * PathMapper::suggestLikelyLocalRoot when the inverse-mapping diagnostic
  * fires and we can hint at a probable local workspace root.
  */
-final class LocalRootSuggestion
+final readonly class LocalRootSuggestion
 {
     public function __construct(
-        public readonly string $localRoot,
-        public readonly string $remoteRoot,
-        public readonly int $overlapSegments,
+        public string $localRoot,
+        public string $remoteRoot,
+        public int $overlapSegments,
     ) {
     }
 

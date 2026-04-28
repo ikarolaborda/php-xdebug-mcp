@@ -23,7 +23,7 @@ use PhpXdebugMcp\Services\AuditLogger;
  */
 final class DockerHelperTools
 {
-    public const ID_PATTERN = '/^[A-Za-z0-9][A-Za-z0-9_.\-]*$/';
+    public const string ID_PATTERN = '/^[A-Za-z0-9][A-Za-z0-9_.\-]*$/';
 
     public function __construct(
         private readonly Config $config,

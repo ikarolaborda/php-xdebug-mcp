@@ -23,7 +23,7 @@ final class DbgpPacketCodec
 {
     private string $buffer = '';
 
-    public const MAX_PACKET_BYTES = 64 * 1024 * 1024;
+    public const int MAX_PACKET_BYTES = 64 * 1024 * 1024;
 
     public function append(string $bytes): void
     {

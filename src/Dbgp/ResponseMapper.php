@@ -24,10 +24,10 @@ use SimpleXMLElement;
  */
 final class ResponseMapper
 {
-    public const PACKET_INIT = 'init';
-    public const PACKET_RESPONSE = 'response';
-    public const PACKET_NOTIFY = 'notify';
-    public const PACKET_STREAM = 'stream';
+    public const string PACKET_INIT = 'init';
+    public const string PACKET_RESPONSE = 'response';
+    public const string PACKET_NOTIFY = 'notify';
+    public const string PACKET_STREAM = 'stream';
 
     public function classify(string $xml): string
     {

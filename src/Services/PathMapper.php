@@ -22,7 +22,7 @@ use PhpXdebugMcp\Domain\Paths\LocalRootSuggestion;
  * - Synthetic locations (eval'd code, internal frames) are recognised and
  *   returned with FrameKind != File and status NotApplicable.
  */
-final class PathMapper
+final readonly class PathMapper
 {
     /** @var list<PathMappingRule> */
     private array $rules;
@@ -187,19 +187,18 @@ final class PathMapper
         }
         $remotePath = self::fileUriToPath($remoteUri) ?? $remoteUri;
 
-        foreach ($this->rules as $rule) {
-            foreach ($rule->exactFiles as $local => $remote) {
-                if (self::pathsEqual($remotePath, $remote)) {
-                    return $rule;
-                }
+        return array_find($this->rules, static function (PathMappingRule $rule) use ($remotePath): bool {
+            $matchesExact = array_any(
+                $rule->exactFiles,
+                static fn (string $remote): bool => self::pathsEqual($remotePath, $remote),
+            );
+            if ($matchesExact) {
+                return true;
             }
             $remoteRoot = self::stripTrailingSlash($rule->remoteRoot);
-            if ($remoteRoot !== '' && self::isUnder($remotePath, $remoteRoot)) {
-                return $rule;
-            }
-        }
 
-        return null;
+            return $remoteRoot !== '' && self::isUnder($remotePath, $remoteRoot);
+        });
     }
 
     public function rulesConfigured(): bool
