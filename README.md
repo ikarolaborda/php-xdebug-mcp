@@ -261,6 +261,7 @@ variables override (`XDEBUG_MCP_*`). Notable knobs:
 | [`examples/docker/`](examples/docker/)                | Docker compose with bind-mounted source |
 | [`examples/docker/php-fpm-compose/`](examples/docker/php-fpm-compose/) | full FPM-in-compose recipe with `clear_env=off` |
 | [`examples/agent-clients/`](examples/agent-clients/)  | Claude Code, Codex, Copilot config snippets |
+| [`examples/pointerpro-e2e/`](examples/pointerpro-e2e/) | curated real-MCP-client trace (handshake → break → stack → variables) against a Laravel app in Docker |
 
 ---
 

@@ -259,7 +259,7 @@ final class InspectionTools
                 $captured = $r;
             },
         );
-        $this->runtime->tickUntil(static fn (): bool => $captured !== null, $this->timeoutMs);
+        $this->runtime->tickUntil(function () use (&$captured): bool { return $captured !== null; }, $this->timeoutMs);
         if ($captured === null) {
             throw AdapterException::from(
                 AdapterErrorCode::Timeout,

@@ -58,6 +58,28 @@ final class ResponseMapperTest extends TestCase
     }
 
     #[Test]
+    public function it_returns_response_body_text_under_value_key(): void
+    {
+        // Regression: feature_get for breakpoint_types puts the value in the
+        // response body, not in a child element. The reader must NOT fall
+        // back to the `supported` attribute (which is just yes/no). See
+        // https://xdebug.org/docs/dbgp .
+        $xml = '<response xmlns="urn:debugger_protocol_v1" command="feature_get" feature_name="breakpoint_types" supported="1" transaction_id="11">line conditional exception call return watch</response>';
+        $r = (new ResponseMapper())->parseResponse($xml);
+        self::assertSame('line conditional exception call return watch', $r['value']);
+        self::assertSame('1', $r['attrs']['supported'] ?? null);
+    }
+
+    #[Test]
+    public function it_decodes_base64_response_body_when_encoding_attr_is_present(): void
+    {
+        $body = base64_encode('hello from engine');
+        $xml = '<response xmlns="urn:debugger_protocol_v1" command="source" transaction_id="3" encoding="base64">' . $body . '</response>';
+        $r = (new ResponseMapper())->parseResponse($xml);
+        self::assertSame('hello from engine', $r['value']);
+    }
+
+    #[Test]
     public function it_maps_status_string_to_session_state_enum(): void
     {
         self::assertSame(SessionState::Break, ResponseMapper::statusFromString('break'));

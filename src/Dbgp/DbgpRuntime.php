@@ -211,11 +211,23 @@ final class DbgpRuntime
                 isContinuation: false,
                 isBreak: false,
                 resolver: function (array $response) use ($session, $name): void {
-                    $value = '';
-                    foreach ($response['children'] ?? [] as $c) {
-                        $value = (string) ($c['value'] ?? '');
+                    // Xdebug returns feature values either as the response's
+                    // text content (most features), or as a `value` attribute
+                    // on the response root (some Xdebug versions). Some
+                    // features (eg. breakpoint_types, supported_encodings) are
+                    // reported as the response body.  The `supported`
+                    // attribute is only a yes/no on whether the feature
+                    // *exists*, not the value — never use it as the value.
+                    $value = (string) ($response['value'] ?? '');
+                    if ($value === '') {
+                        foreach ($response['children'] ?? [] as $c) {
+                            $candidate = (string) ($c['value'] ?? '');
+                            if ($candidate !== '') {
+                                $value = $candidate;
+                                break;
+                            }
+                        }
                     }
-                    $value = $value !== '' ? $value : (string) ($response['attrs']['supported'] ?? '0');
                     $session->features[$name] = $value;
                     if ($name === 'supports_async') {
                         $session->supportsAsync = $value === '1';

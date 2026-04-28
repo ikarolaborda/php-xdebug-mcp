@@ -66,7 +66,7 @@ final class ResponseMapper
         );
     }
 
-    /** @return array{transaction_id:int, command:string, status:?string, reason:?string, attrs:array<string,string>, children:array<int,array<string,mixed>>, errors:list<array{code:int,message:?string}>} */
+    /** @return array{transaction_id:int, command:string, status:?string, reason:?string, attrs:array<string,string>, value:?string, children:array<int,array<string,mixed>>, errors:list<array{code:int,message:?string}>} */
     public function parseResponse(string $xml): array
     {
         $node = self::parseRoot($xml);
@@ -81,6 +81,14 @@ final class ResponseMapper
                 'message' => isset($err->message) ? (string) $err->message : null,
             ];
         }
+        $arr = self::nodeToArray($node);
+        $value = $arr['value'];
+        if (($a['encoding'] ?? null) === 'base64' && $value !== null && $value !== '') {
+            $decoded = base64_decode($value, true);
+            if ($decoded !== false) {
+                $value = $decoded;
+            }
+        }
 
         return [
             'transaction_id' => (int) ($a['transaction_id'] ?? 0),
@@ -88,7 +96,8 @@ final class ResponseMapper
             'status' => $a['status'] ?? null,
             'reason' => $a['reason'] ?? null,
             'attrs' => $a,
-            'children' => self::nodeToArray($node)['children'] ?? [],
+            'value' => $value,
+            'children' => $arr['children'] ?? [],
             'errors' => $errors,
         ];
     }

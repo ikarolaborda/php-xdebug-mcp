@@ -77,7 +77,7 @@ final class IoTools
                     $captured = $r;
                 },
             );
-            $this->runtime->tickUntil(static fn (): bool => $captured !== null, 1500);
+            $this->runtime->tickUntil(function () use (&$captured): bool { return $captured !== null; }, 1500);
             $session->sendCommand(
                 'stdin',
                 [],
@@ -108,7 +108,7 @@ final class IoTools
                 $captured = $r;
             },
         );
-        $this->runtime->tickUntil(static fn (): bool => $captured !== null, 1500);
+        $this->runtime->tickUntil(function () use (&$captured): bool { return $captured !== null; }, 1500);
         if ($captured === null) {
             throw AdapterException::from(AdapterErrorCode::Timeout, 'Timeout configuring ' . $stream);
         }

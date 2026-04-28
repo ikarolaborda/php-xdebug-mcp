@@ -77,7 +77,7 @@ final class ControlTools
                     $captured = $r;
                 },
             );
-            $this->runtime->tickUntil(static fn (): bool => $captured !== null, $timeout_ms);
+            $this->runtime->tickUntil(function () use (&$captured): bool { return $captured !== null; }, $timeout_ms);
             $this->audit->tool('xdebug_break_execution', $session->adapterId, [], 'ok');
         } catch (AdapterException $e) {
             return ToolResult::error($e);
@@ -158,7 +158,7 @@ final class ControlTools
                 },
             );
             $deadline = $timeoutMs ?? $this->config->continuationTimeoutMs;
-            $this->runtime->tickUntil(static fn (): bool => $captured !== null, $deadline);
+            $this->runtime->tickUntil(function () use (&$captured): bool { return $captured !== null; }, $deadline);
             $this->audit->tool($toolName, $session->adapterId, ['timeout_ms' => $deadline], $captured === null ? 'still_running' : 'ok');
         } catch (AdapterException $e) {
             return ToolResult::error($e);
@@ -214,7 +214,9 @@ final class ControlTools
                 }
             }
             $this->runtime->tickUntil(
-                static fn (): bool => $captured !== null || $session->state === SessionState::Disconnected,
+                function () use (&$captured, $session): bool {
+                    return $captured !== null || $session->state === SessionState::Disconnected;
+                },
                 5000,
             );
             $this->audit->tool($toolName, $session->adapterId, [], 'ok');
