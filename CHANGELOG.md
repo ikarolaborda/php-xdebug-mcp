@@ -6,6 +6,44 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-04-28
+
+### Fixed
+
+- **`feature_get` value parsing.** The DBGp response carries the
+  feature value in the response *body text* (not in a child element,
+  not in the `supported` attribute — `supported` is a yes/no flag).
+  v0.2.0 read the wrong field, which silently corrupted
+  `breakpoint_types` to `"1"` against real Xdebug 3.5.1 and made
+  `xdebug_set_breakpoint` fail with `FEATURE_UNSUPPORTED: Engine does
+  not advertise breakpoint type line. Advertised: 1`. Discovered via
+  the new Pointerpro end-to-end harness; regression test added.
+- **`tickUntil` predicates that observed primitive variables.** The
+  predicates used `static fn () => $captured !== null`. PHP arrow
+  functions auto-capture by *value*, so once `$captured` was created
+  as `null` the predicate forever saw `null` even after the resolver
+  closure (which DOES use `&` by-reference) populated it. Net effect:
+  every `xdebug_continue` / `xdebug_step_*` / `xdebug_get_stack` /
+  `xdebug_get_variables` / `xdebug_get_property` etc. ran the *full*
+  `continuation_timeout_ms` / `inspection_timeout_ms` even when the
+  engine had already responded in milliseconds. Switched the affected
+  predicates to regular closures with explicit `use (&$captured)`.
+
+### Added
+
+- `examples/pointerpro-e2e/` — curated trace and reproduction notes
+  from a real run against a Laravel application running in Docker:
+  Xdebug 3.5.1 + PHP-FPM 8.4 + nginx HTTPS. The trace shows the full
+  `initialize -> set_breakpoint -> continue -> get_stack ->
+  get_variables -> release` flow completing in ~620 ms.
+
+### Performance
+
+- After both fixes, an entire debug session (handshake + breakpoint +
+  continue + stack/variables + release) completes in ~600 ms against
+  a real Pointerpro Laravel boot, vs. ~30+ seconds before — an
+  artefact of the timeout-walking caused by the predicate bug.
+
 ## [0.2.0] - 2026-04-28
 
 ### BREAKING
@@ -106,6 +144,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 - Real-Xdebug end-to-end MCP-driven flow is documented in
   `examples/docker/php-fpm-compose/` but not gated as a CI run.
 
-[Unreleased]: https://github.com/ikarolaborda/php-xdebug-mcp/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/ikarolaborda/php-xdebug-mcp/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/ikarolaborda/php-xdebug-mcp/releases/tag/v0.2.1
 [0.2.0]: https://github.com/ikarolaborda/php-xdebug-mcp/releases/tag/v0.2.0
 [0.1.0]: https://github.com/ikarolaborda/php-xdebug-mcp/releases/tag/v0.1.0
