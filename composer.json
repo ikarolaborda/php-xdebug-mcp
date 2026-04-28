@@ -22,6 +22,12 @@
             "email": "iclaborda@msn.com"
         }
     ],
+    "homepage": "https://github.com/ikarolaborda/php-xdebug-mcp",
+    "support": {
+        "issues": "https://github.com/ikarolaborda/php-xdebug-mcp/issues",
+        "source": "https://github.com/ikarolaborda/php-xdebug-mcp",
+        "security": "https://github.com/ikarolaborda/php-xdebug-mcp/security/policy"
+    },
     "bin": [
         "bin/php-xdebug-mcp"
     ],
